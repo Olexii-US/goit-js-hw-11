@@ -1,40 +1,42 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio'
+import axios from 'axios';
+
 export default class PixabayImg {
     constructor() {
         this.searchQuery = "";
         this.page = 1;
         }
 
-    getImage() {
+    async getImage() {
 
-    const searchParams = new URLSearchParams({
-    key: "31443805-4c85089cebd86174cba4b6646",
-    q: `${this.searchQuery}`,
-    image_type: "photo",
-    orientation: "horizontal",
-    safesearch: "true",
-    per_page: 100,
-    page: this.page
-})
-    const url = `https://pixabay.com/api/?${searchParams}`
-
-    return fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(response.status);
-            }
-        return response.json()
+        const searchParams = new URLSearchParams({
+            key: "31443805-4c85089cebd86174cba4b6646",
+            q: `${this.searchQuery}`,
+            image_type: "photo",
+            orientation: "horizontal",
+            safesearch: "true",
+            per_page: 100,
+            page: this.page
         })
-        .then(data => {
-            console.log("data", data)
-            if (data.hits.length === 0) {
+        const url = `https://pixabay.com/api/?${searchParams}`
+
+
+        try {
+            const response = await axios.get(url)
+            console.log("response", response.data)
+
+            if (response.data.hits.length === 0) {
                 console.log("все пропало")
                 return Notify.warning("Sorry, there are no images matching your search query. Please try again.")
             }
             this.page += 1;
-            return data
-        })
-        .catch(error => Notify.failure(error.message))  
+            return response.data
+
+        }
+
+        catch (error) {
+            Notify.failure(error.message)
+        }
     }
 
     resetPage() {

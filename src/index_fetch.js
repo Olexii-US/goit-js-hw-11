@@ -1,6 +1,6 @@
+// import { getImage } from "./fetchPixabay";
 import PixabayImg from "./fetchPixabay";
 import { Notify } from 'notiflix/build/notiflix-notify-aio'
-import axios from 'axios';
 
 
 const refs = {
