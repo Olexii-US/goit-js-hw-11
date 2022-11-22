@@ -2,8 +2,6 @@ import PixabayImg from "./fetchPixabay";
 import { Notify } from 'notiflix/build/notiflix-notify-aio'
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
-import throttle from "lodash.throttle";
-import debounce from "lodash.debounce";
 import axios from 'axios';
 
 
@@ -14,6 +12,7 @@ const refs = {
 }
 
 refs.form.addEventListener('submit', onFormSubmit)
+refs.loadMoreBtn.addEventListener("click", onloadMore)
 
 const pixabayImg = new PixabayImg()
 refs.loadMoreBtn.hidden = true
@@ -28,15 +27,16 @@ function onFormSubmit(event) {
   resetMarkup()
 }
 
+//////On load more Btn//////////////
+function onloadMore() {
+  pixabayImg.getImage().then(markupImgSearch)
+}
 
 function markupImgSearch(data) {
     searchArray = data.hits
-    console.log(searchArray)
     
-    const markup = searchArray.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
-        console.log(likes)
-            
-      return `<div class="photo-card"><a href="${largeImageURL}">
+  const markup = searchArray.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+    return `<div class="photo-card"><a href="${largeImageURL}">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" /></a>
   <div class="info">
     <p class="info-item">
@@ -52,25 +52,25 @@ function markupImgSearch(data) {
       <b>Downloads ${downloads}</b>
     </p>
   </div>
-</div>`        
-    })
+</div>`
+  })
         .join("")
    
   refs.galleryBox.insertAdjacentHTML("beforeend", markup)
+  refs.loadMoreBtn.hidden = false
 
   totalHitsCount(data)
 
   new SimpleLightbox('.photo-card a', { captionDelay: 250 }).refresh();
 
-  
-    /////// scroll///////
-//   const { height: cardHeight } = document
-//   .querySelector(".gallery")
-//   .firstElementChild.getBoundingClientRect();
-// window.scrollBy({
-//   top: cardHeight * 2,
-//   behavior: "smooth",
-// });
+    ///// scroll///////
+  const { height: cardHeight } = document
+  .querySelector(".gallery")
+  .firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+  top: cardHeight * 2,
+  behavior: "smooth",
+});
 }
 
 function resetMarkup() {
@@ -82,33 +82,6 @@ function totalHitsCount(data) {
 
     if (totalHits >= data.totalHits) {
       Notify.info("We're sorry, but you've reached the end of search results.")
-
-
-//////////////////////
-      window.removeEventListener("scroll", onScroll)
-//////////////////////////////////////
-
-
-      console.log("data.totalHits", data.totalHits)
-    } 
-}
-
-
-///////////// infinitive scroll ////////////////
-window.addEventListener("scroll", throttle(onScroll, 1000))
-
-function onScroll() {
-  const { scrollHeight, scrollTop, clientHeight } = document.documentElement
-
-  const scrollPosition = scrollHeight - clientHeight
-  const scrollTopRound = Math.round(scrollTop)
-
-  console.log("scrollPosition", scrollPosition)
-  console.log("scrollTop", Math.round(scrollTop))
-
-    if (scrollPosition === scrollTopRound || scrollPosition === scrollTopRound - 1 || scrollPosition === scrollTopRound + 1) {
-      pixabayImg.getImage().then(markupImgSearch)
-
-      console.log('aaaaaaaaaaaaaaaa')
+      refs.loadMoreBtn.hidden = true
     }
 }
