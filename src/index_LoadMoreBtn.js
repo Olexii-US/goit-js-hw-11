@@ -37,7 +37,7 @@ function markupImgSearch(data) {
     
   const markup = searchArray.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
     return `<div class="photo-card"><a href="${largeImageURL}">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" /></a>
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" class="immage" /></a>
   <div class="info">
     <p class="info-item">
       <b>Likes ${likes}</b>
