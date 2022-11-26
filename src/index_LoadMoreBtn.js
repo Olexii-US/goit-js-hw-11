@@ -32,7 +32,6 @@ function onloadMore() {
 }
 
 function markupImgSearch(data) {
-    // searchArray = data.hits
     
   const markup = data.hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
     return `<div class="photo-card"><a href="${largeImageURL}">

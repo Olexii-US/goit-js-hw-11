@@ -3,9 +3,6 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio'
 import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import throttle from "lodash.throttle";
-import debounce from "lodash.debounce";
-import axios from 'axios';
-
 
 const refs = {
     form: document.querySelector('#search-form'),
@@ -14,6 +11,8 @@ const refs = {
 }
 
 refs.form.addEventListener('submit', onFormSubmit)
+
+const maxPage = 13;
 
 const pixabayImg = new PixabayImg()
 refs.loadMoreBtn.hidden = true
@@ -28,14 +27,8 @@ function onFormSubmit(event) {
   resetMarkup()
 }
 
-
 function markupImgSearch(data) {
-    // searchArray = data.hits
-    // console.log(searchArray)
-    
     const markup = data.hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
-        console.log(likes)
-            
       return `<div class="photo-card"><a href="${largeImageURL}">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" class="image" /></a>
   <div class="info">
@@ -61,16 +54,6 @@ function markupImgSearch(data) {
   totalHitsCount(data)
 
   new SimpleLightbox('.photo-card a', { captionDelay: 250 }).refresh();
-
-  
-    /////// scroll///////
-//   const { height: cardHeight } = document
-//   .querySelector(".gallery")
-//   .firstElementChild.getBoundingClientRect();
-// window.scrollBy({
-//   top: cardHeight * 2,
-//   behavior: "smooth",
-// });
 }
 
 function resetMarkup() {
@@ -79,37 +62,27 @@ function resetMarkup() {
 
 function totalHitsCount(data) {
   totalHitsForPage += data.hits.length
-
     if (totalHitsForPage >= data.totalHits) {
-     Notify.info("We're sorry, but you've reached the end of search results.")
-
-
-//////////////////////
-      // window.removeEventListener("scroll", onScroll)
-//////////////////////////////////////
-
-
-      console.log("data.totalHits", data.totalHits)
+      Notify.info("We're sorry, but you've reached the end of search results.")
     } 
 }
 
- window.addEventListener("scroll", throttle(onScroll, 1000))
-
-
+/////// infinity scroll ////////
+window.addEventListener("scroll", throttle(onScroll, 500))
 
 function onScroll() {
+  if (pixabayImg.page > maxPage) {
+    return
+  }
+  
   const { scrollHeight, scrollTop, clientHeight } = document.documentElement
 
   const scrollPosition = scrollHeight - clientHeight
   const scrollTopRound = Math.round(scrollTop)
 
-  console.log("scrollPosition", scrollPosition)
-  console.log("scrollTopRound", scrollTopRound)
-    if (scrollTopRound >= scrollPosition - 1) {
+  if (scrollTopRound >= scrollPosition - 1) {
       pixabayImg.getImage().then(markupImgSearch)
-
-      console.log('aaaaaaaaaaaaaaaa')
     }
 }
 
-console.log("hi")
+
