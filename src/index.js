@@ -30,10 +30,10 @@ function onFormSubmit(event) {
 
 
 function markupImgSearch(data) {
-    searchArray = data.hits
-    console.log(searchArray)
+    // searchArray = data.hits
+    // console.log(searchArray)
     
-    const markup = searchArray.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+    const markup = data.hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
         console.log(likes)
             
       return `<div class="photo-card"><a href="${largeImageURL}">

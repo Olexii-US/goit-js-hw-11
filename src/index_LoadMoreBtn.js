@@ -32,9 +32,9 @@ function onloadMore() {
 }
 
 function markupImgSearch(data) {
-    searchArray = data.hits
+    // searchArray = data.hits
     
-  const markup = searchArray.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
+  const markup = data.hits.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
     return `<div class="photo-card"><a href="${largeImageURL}">
   <img src="${webformatURL}" alt="${tags}" loading="lazy" class="image" /></a>
   <div class="info">
