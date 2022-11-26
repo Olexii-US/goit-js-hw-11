@@ -81,11 +81,11 @@ function totalHitsCount(data) {
   totalHits += data.hits.length
 
     if (totalHits >= data.totalHits) {
-      Notify.info("We're sorry, but you've reached the end of search results.")
+     Notify.info("We're sorry, but you've reached the end of search results.")
 
 
 //////////////////////
-      window.removeEventListener("scroll", onScroll)
+      // window.removeEventListener("scroll", onScroll)
 //////////////////////////////////////
 
 
@@ -93,9 +93,9 @@ function totalHitsCount(data) {
     } 
 }
 
+ window.addEventListener("scroll", throttle(onScroll, 1000))
 
-///////////// infinitive scroll ////////////////
-window.addEventListener("scroll", throttle(onScroll, 1000))
+
 
 function onScroll() {
   const { scrollHeight, scrollTop, clientHeight } = document.documentElement
@@ -104,9 +104,8 @@ function onScroll() {
   const scrollTopRound = Math.round(scrollTop)
 
   console.log("scrollPosition", scrollPosition)
-  console.log("scrollTop", Math.round(scrollTop))
-
-    if (scrollPosition === scrollTopRound || scrollPosition === scrollTopRound - 1 || scrollPosition === scrollTopRound + 1) {
+  console.log("scrollTopRound", scrollTopRound)
+    if (scrollTopRound >= scrollPosition - 1) {
       pixabayImg.getImage().then(markupImgSearch)
 
       console.log('aaaaaaaaaaaaaaaa')
