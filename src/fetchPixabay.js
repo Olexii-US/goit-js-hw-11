@@ -14,17 +14,15 @@ export default class PixabayImg {
             image_type: "photo",
             orientation: "horizontal",
             safesearch: "true",
-            per_page: 100,
+            per_page: 40,
             page: this.page
         })
         const url = `https://pixabay.com/api/?${searchParams}`
 
         try {
             const response = await axios.get(url)
-            console.log("response", response.data)
-
+ 
             if (response.data.hits.length === 0) {
-                console.log("все пропало")
                 return Notify.warning("Sorry, there are no images matching your search query. Please try again.")
             }
             if (this.page === 1) {

@@ -4,7 +4,6 @@ import SimpleLightbox from "simplelightbox";
 import "simplelightbox/dist/simple-lightbox.min.css";
 import axios from 'axios';
 
-
 const refs = {
     form: document.querySelector('#search-form'),
     galleryBox: document.querySelector(".gallery"),
@@ -16,7 +15,7 @@ refs.loadMoreBtn.addEventListener("click", onloadMore)
 
 const pixabayImg = new PixabayImg()
 refs.loadMoreBtn.hidden = true
-let totalHits = 0;
+let totalHitsForPage = 0;
 
 function onFormSubmit(event) {
     event.preventDefault()
@@ -37,40 +36,31 @@ function markupImgSearch(data) {
     
   const markup = searchArray.map(({ webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => {
     return `<div class="photo-card"><a href="${largeImageURL}">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" class="immage" /></a>
+  <img src="${webformatURL}" alt="${tags}" loading="lazy" class="image" /></a>
   <div class="info">
     <p class="info-item">
-      <b>Likes ${likes}</b>
+      <b>Likes</b> ${likes}
     </p>
     <p class="info-item">
-      <b>Views ${views}</b>
+      <b>Views</b> ${views}
     </p>
     <p class="info-item">
-      <b>Comments ${comments}</b>
+      <b>Comments</b> ${comments}
     </p>
     <p class="info-item">
-      <b>Downloads ${downloads}</b>
+      <b>Downloads</b> ${downloads}
     </p>
   </div>
 </div>`
   })
-        .join("")
-   
+    .join("")
+
   refs.galleryBox.insertAdjacentHTML("beforeend", markup)
   refs.loadMoreBtn.hidden = false
 
   totalHitsCount(data)
 
   new SimpleLightbox('.photo-card a', { captionDelay: 250 }).refresh();
-
-    ///// scroll///////
-  const { height: cardHeight } = document
-  .querySelector(".gallery")
-  .firstElementChild.getBoundingClientRect();
-  window.scrollBy({
-  top: cardHeight * 2,
-  behavior: "smooth",
-});
 }
 
 function resetMarkup() {
@@ -78,10 +68,24 @@ function resetMarkup() {
 }
 
 function totalHitsCount(data) {
-  totalHits += data.hits.length
+  totalHitsForPage += data.hits.length
+    
+    if (pixabayImg.page > 2) {
+    smoothScroll()
+  }
 
-    if (totalHits >= data.totalHits) {
+    if (totalHitsForPage >= data.totalHits) {
       Notify.info("We're sorry, but you've reached the end of search results.")
       refs.loadMoreBtn.hidden = true
-    }
+  }
+}
+
+function smoothScroll() {
+  const { height: cardHeight } = document
+  .querySelector(".gallery")
+  .firstElementChild.getBoundingClientRect();
+  window.scrollBy({
+  top: cardHeight * 2,
+  behavior: "smooth",
+});
 }
